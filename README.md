@@ -1,6 +1,24 @@
 # Estrutura do Projeto Flask
 
-Este é um exemplo de estrutura para um projeto Flask.
+Este repositório usa a seguinte estrutura base para um projeto Flask:
+
+```text
+.
+├── app/
+│   ├── __init__.py
+│   ├── routes.py
+│   ├── static/
+│   │   └── style.css
+│   └── templates/
+│       ├── about.html
+│       ├── base.html
+│       └── index.html
+├── config.py
+├── requirements.txt
+├── run.py
+└── Tests/
+    └── test_route.py
+```
 
 ## Como rodar o projeto
 
@@ -9,10 +27,10 @@ Este é um exemplo de estrutura para um projeto Flask.
    pip install -r requirements.txt
    ```
 
-2. Exporte as variáveis de ambiente (ou configure o `.flaskenv`):
+2. Exporte as variáveis de ambiente para desenvolvimento (o `.flaskenv` já define apenas `FLASK_APP`):
    ```bash
    export FLASK_APP=run.py
-   export FLASK_ENV=development
+   export FLASK_DEBUG=1
    ```
 
 3. Rode o servidor:
@@ -21,3 +39,9 @@ Este é um exemplo de estrutura para um projeto Flask.
    ```
 
 4. Acesse o aplicativo em `http://127.0.0.1:5000`.
+
+## Testes
+
+```bash
+pytest -q
+```
