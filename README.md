@@ -30,7 +30,7 @@ Este repositório usa a seguinte estrutura base para um projeto Flask:
 2. Exporte as variáveis de ambiente (ou use `.flaskenv`):
    ```bash
    export FLASK_APP=run.py
-   export FLASK_ENV=development
+   export FLASK_DEBUG=1
    ```
 
 3. Rode o servidor:
