@@ -27,7 +27,7 @@ Este repositório usa a seguinte estrutura base para um projeto Flask:
    pip install -r requirements.txt
    ```
 
-2. Exporte as variáveis de ambiente (ou use `.flaskenv`):
+2. Exporte as variáveis de ambiente para desenvolvimento (o `.flaskenv` já define apenas `FLASK_APP`):
    ```bash
    export FLASK_APP=run.py
    export FLASK_DEBUG=1
