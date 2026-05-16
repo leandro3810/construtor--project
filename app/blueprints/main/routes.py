@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template
-
-main = Blueprint('main', __name__)
+from flask import render_template
+from . import main
 
 
 @main.route('/')
@@ -8,6 +7,6 @@ def home():
     return render_template('index.html')
 
 
-@main.route('/about')
+@main.route('/sobre')
 def about():
     return render_template('about.html')

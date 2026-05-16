@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.name }} | Construtor Project{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <a href="{{ url_for('catalog.index') }}" class="back-link">← Projetos</a>
+  <h1>{{ project.name }}</h1>
+  <div class="meta-row">
+    <span class="badge badge-{{ project.category|lower|replace(' ', '-') }}">{{ project.category }}</span>
+    <span class="status status-{{ project.status|lower|replace(' ', '-') }}">{{ project.status }}</span>
+    <small>Criado em {{ project.created_at.strftime('%d/%m/%Y') }}</small>
+  </div>
+</div>
+
+<section class="section detail-grid">
+  <div class="detail-desc">
+    <h2>Descrição</h2>
+    <p>{{ project.description }}</p>
+  </div>
+
+  <div class="detail-models">
+    <h2>Modelos 3D ({{ project.models3d|length }})</h2>
+    {% if project.models3d %}
+    <ul class="model-list">
+      {% for m in project.models3d %}
+      <li>
+        <a href="{{ url_for('models3d.viewer', model_id=m.id) }}">
+          <span class="model-icon">🧊</span>
+          <span>{{ m.name }}</span>
+          <span class="badge badge-outline">{{ m.category }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state">Nenhum modelo 3D associado.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

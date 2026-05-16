@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Modelos 3D | Construtor Project{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>Modelos 3D</h1>
+  <p>{{ modelos|length }} modelo{{ 's' if modelos|length != 1 }} disponíve{{ 'is' if modelos|length != 1 else 'l' }}.</p>
+</div>
+
+<section class="section">
+  {% if modelos %}
+  <div class="cards">
+    {% for m in modelos %}
+    <a href="{{ url_for('models3d.viewer', model_id=m.id) }}" class="card card-link card-3d">
+      <div class="card-header">
+        <span class="badge badge-outline">{{ m.category }}</span>
+      </div>
+      <div class="card-preview" aria-hidden="true">
+        <canvas class="preview-canvas" data-model-id="{{ m.id }}"></canvas>
+      </div>
+      <h3>{{ m.name }}</h3>
+      <p>{{ m.description[:100] }}{% if m.description|length > 100 %}…{% endif %}</p>
+      {% if m.project %}
+      <div class="card-footer">
+        <small>Projeto: {{ m.project.name }}</small>
+      </div>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state">Nenhum modelo 3D cadastrado ainda.</p>
+  {% endif %}
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/previews3d.js') }}"></script>
+{% endblock %}

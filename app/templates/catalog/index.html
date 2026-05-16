@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Projetos | Construtor Project{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>Catálogo de Projetos</h1>
+  <p>{{ projects|length }} projeto{{ 's' if projects|length != 1 }} cadastrado{{ 's' if projects|length != 1 }}.</p>
+</div>
+
+<section class="section">
+  {% if projects %}
+  <div class="cards">
+    {% for p in projects %}
+    <a href="{{ url_for('catalog.detail', project_id=p.id) }}" class="card card-link">
+      <div class="card-header">
+        <span class="badge badge-{{ p.category|lower|replace(' ', '-') }}">{{ p.category }}</span>
+        <span class="status status-{{ p.status|lower|replace(' ', '-') }}">{{ p.status }}</span>
+      </div>
+      <h3>{{ p.name }}</h3>
+      <p>{{ p.description[:120] }}{% if p.description|length > 120 %}…{% endif %}</p>
+      <div class="card-footer">
+        <small>{{ p.models3d|length }} modelo(s) 3D</small>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state">Nenhum projeto cadastrado ainda.</p>
+  {% endif %}
+</section>
+{% endblock %}

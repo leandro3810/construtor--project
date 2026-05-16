@@ -1,9 +1,43 @@
 {% extends 'base.html' %}
 
-{% block title %}Home | Construtor Project{% endblock %}
+{% block title %}Início | Construtor Project{% endblock %}
 
 {% block content %}
-<h1>Bem-vindo ao Construtor Project</h1>
-<p>Este projeto foi atualizado para ter uma estrutura HTML mais organizada e semântica.</p>
-<p>Use o menu acima para navegar entre as páginas principais da aplicação.</p>
+<section class="hero">
+  <div class="hero-content">
+    <h1>Construtor Project</h1>
+    <p class="hero-sub">Plataforma de projetos de construção civil com visualização 3D interativa.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Ver Projetos</a>
+      <a href="{{ url_for('models3d.index') }}" class="btn btn-outline">Explorar Modelos 3D</a>
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <canvas id="hero-canvas"></canvas>
+  </div>
+</section>
+
+<section class="section features">
+  <h2 class="section-title">O que oferecemos</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🏗️</div>
+      <h3>Catálogo de Projetos</h3>
+      <p>Gerencie e visualize projetos residenciais, comerciais e industriais em um só lugar.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧊</div>
+      <h3>Modelos 3D Interativos</h3>
+      <p>Explore estruturas e arquiteturas em três dimensões diretamente no navegador.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <h3>Configuração Simples</h3>
+      <p>Dados persistidos em banco local, fácil de customizar e expandir conforme o projeto cresce.</p>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
+<script src="{{ url_for('static', filename='js/hero3d.js') }}"></script>
 {% endblock %}

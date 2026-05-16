@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ modelo.name }} | Modelos 3D{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <a href="{{ url_for('models3d.index') }}" class="back-link">← Modelos 3D</a>
+  <h1>{{ modelo.name }}</h1>
+  <div class="meta-row">
+    <span class="badge badge-outline">{{ modelo.category }}</span>
+    {% if modelo.project %}
+    <a href="{{ url_for('catalog.detail', project_id=modelo.project.id) }}" class="meta-link">
+      Projeto: {{ modelo.project.name }}
+    </a>
+    {% endif %}
+    <small>Criado em {{ modelo.created_at.strftime('%d/%m/%Y') }}</small>
+  </div>
+</div>
+
+<section class="section viewer-section">
+  <div class="viewer-container">
+    <canvas id="viewer-canvas"></canvas>
+    <div class="viewer-controls">
+      <button id="btn-wireframe" class="btn btn-sm">Wireframe</button>
+      <button id="btn-solid" class="btn btn-sm btn-primary">Sólido</button>
+      <button id="btn-reset" class="btn btn-sm">Resetar câmera</button>
+    </div>
+    <p class="viewer-hint">Arraste para orbitar · Scroll para zoom · Botão direito para mover</p>
+  </div>
+  <div class="viewer-info">
+    <h2>Descrição</h2>
+    <p>{{ modelo.description }}</p>
+    <h2>Categoria</h2>
+    <p><span class="badge badge-outline">{{ modelo.category }}</span></p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.163.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+  window.MODELO_ID = {{ modelo.id }};
+  window.MODELO_CATEGORY = {{ modelo.category | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/viewer3d.js') }}"></script>
+{% endblock %}
