@@ -20,6 +20,12 @@ Este repositório usa a seguinte estrutura base para um projeto Flask:
     └── test_route.py
 ```
 
+## Versões do framework e runtime
+
+- Python: `3.12.3` (validado neste projeto)
+- Framework web: `Flask 3.1.3` (versão estável mais recente)
+- Node.js/React: não aplicável neste repositório (projeto Python/Flask)
+
 ## Como rodar o projeto
 
 1. Instale as dependências:
