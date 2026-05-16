@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if modelo %}Editar Modelo 3D{% else %}Novo Modelo 3D{% endif %} | Construtor Project{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <a href="{{ url_for('models3d.index') }}" class="back-link">← Modelos 3D</a>
+  <h1>{% if modelo %}Editar Modelo 3D{% else %}Novo Modelo 3D{% endif %}</h1>
+</div>
+
+<section class="section">
+  <form method="post" class="data-form">
+    {% if error %}
+    <p class="form-error">{{ error }}</p>
+    {% endif %}
+
+    <div class="form-grid">
+      <label>Nome*
+        <input type="text" name="name" maxlength="120" required value="{{ form_data.get('name', '') }}">
+      </label>
+      <label>Categoria*
+        <select name="category" required>
+          {% for option in categories %}
+          <option value="{{ option }}" {% if form_data.get('category') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Disciplina*
+        <input type="text" name="discipline" maxlength="60" required value="{{ form_data.get('discipline', '') }}">
+      </label>
+      <label>Versão*
+        <input type="text" name="version" maxlength="20" required value="{{ form_data.get('version', '') }}">
+      </label>
+      <label>Formato*
+        <input type="text" name="format" maxlength="20" required value="{{ form_data.get('format', '') }}">
+      </label>
+      <label>Autor*
+        <input type="text" name="author_name" maxlength="120" required value="{{ form_data.get('author_name', '') }}">
+      </label>
+      <label>Status de validação*
+        <select name="validation_status" required>
+          {% for option in validation_statuses %}
+          <option value="{{ option }}" {% if form_data.get('validation_status') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Tamanho do arquivo (MB)*
+        <input type="number" name="file_size_mb" step="0.01" min="0.01" required value="{{ form_data.get('file_size_mb', '') }}">
+      </label>
+      <label>Arquivo (nome)
+        <input type="text" name="file_name" maxlength="255" value="{{ form_data.get('file_name', '') }}">
+      </label>
+      <label>Projeto associado*
+        <select name="project_id" required>
+          <option value="">Selecione</option>
+          {% for project in projects %}
+          <option value="{{ project.id }}" {% if form_data.get('project_id') == project.id|string %}selected{% endif %}>
+            {{ project.code }} — {{ project.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <label>Descrição*
+      <textarea name="description" rows="5" required>{{ form_data.get('description', '') }}</textarea>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if modelo %}Salvar alterações{% else %}Cadastrar modelo{% endif %}</button>
+      <a href="{{ url_for('models3d.index') }}" class="btn btn-outline">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -8,12 +8,16 @@
   <h1>{{ modelo.name }}</h1>
   <div class="meta-row">
     <span class="badge badge-outline">{{ modelo.category }}</span>
+    <span class="badge badge-outline">{{ modelo.validation_status }}</span>
     {% if modelo.project %}
     <a href="{{ url_for('catalog.detail', project_id=modelo.project.id) }}" class="meta-link">
       Projeto: {{ modelo.project.name }}
     </a>
     {% endif %}
     <small>Criado em {{ modelo.created_at.strftime('%d/%m/%Y') }}</small>
+  </div>
+  <div class="hero-actions">
+    <a href="{{ url_for('models3d.edit', model_id=modelo.id) }}" class="btn btn-outline">Editar Modelo</a>
   </div>
 </div>
 
@@ -30,8 +34,17 @@
   <div class="viewer-info">
     <h2>Descrição</h2>
     <p>{{ modelo.description }}</p>
-    <h2>Categoria</h2>
-    <p><span class="badge badge-outline">{{ modelo.category }}</span></p>
+    <h2>Dados técnicos</h2>
+    <ul class="data-list">
+      <li><strong>Categoria:</strong> {{ modelo.category }}</li>
+      <li><strong>Disciplina:</strong> {{ modelo.discipline }}</li>
+      <li><strong>Formato:</strong> {{ modelo.format }}</li>
+      <li><strong>Versão:</strong> {{ modelo.version }}</li>
+      <li><strong>Autor:</strong> {{ modelo.author_name }}</li>
+      <li><strong>Status:</strong> {{ modelo.validation_status }}</li>
+      <li><strong>Tamanho:</strong> {{ '%.2f'|format(modelo.file_size_mb) }} MB</li>
+      <li><strong>Arquivo:</strong> {{ modelo.file_name or 'Não informado' }}</li>
+    </ul>
   </div>
 </section>
 

@@ -6,6 +6,9 @@
 <div class="page-hero">
   <h1>Modelos 3D</h1>
   <p>{{ modelos|length }} modelo{{ 's' if modelos|length != 1 }} disponíve{{ 'is' if modelos|length != 1 else 'l' }}.</p>
+  <div class="hero-actions">
+    <a href="{{ url_for('models3d.create') }}" class="btn btn-primary">Novo Modelo 3D</a>
+  </div>
 </div>
 
 <section class="section">
@@ -21,6 +24,7 @@
       </div>
       <h3>{{ m.name }}</h3>
       <p>{{ m.description[:100] }}{% if m.description|length > 100 %}…{% endif %}</p>
+      <p><strong>{{ m.format }}</strong> · {{ m.version }} · {{ '%.2f'|format(m.file_size_mb) }} MB</p>
       {% if m.project %}
       <div class="card-footer">
         <small>Projeto: {{ m.project.name }}</small>

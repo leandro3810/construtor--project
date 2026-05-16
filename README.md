@@ -2,6 +2,13 @@
 
 Plataforma web para gestão de projetos de construção civil com visualização 3D interativa.
 
+## Escopo MVP implementado
+
+- Catálogo de projetos com dados reais de negócio
+- Módulo de modelos 3D com metadados técnicos completos
+- Gestão básica via interface web (cadastro e edição de projetos e modelos 3D)
+- Visualização e navegação entre projeto e modelo relacionado
+
 ## Estrutura
 
 ```
@@ -51,6 +58,35 @@ flask run
 Acesse: `http://127.0.0.1:5000`
 
 O banco SQLite (`construtor.db`) é criado automaticamente na primeira execução com dados de exemplo.
+
+## Dados do projeto
+
+### Projeto (catálogo)
+
+Campos principais:
+- Código único
+- Nome e descrição
+- Cliente, local e responsável técnico
+- Categoria e status
+- Área (m²) e orçamento (R$)
+- Data de início e término previsto
+
+### Modelo 3D
+
+Campos principais:
+- Nome e descrição
+- Categoria e disciplina
+- Versão, formato e autor
+- Status de validação
+- Tamanho de arquivo (MB) e nome do arquivo
+- Projeto associado (relacionamento obrigatório)
+
+## Gestão de dados (cadastro/edição)
+
+- Criar projeto: `GET/POST /projetos/novo`
+- Editar projeto: `GET/POST /projetos/<id>/editar`
+- Criar modelo 3D: `GET/POST /modelos-3d/novo`
+- Editar modelo 3D: `GET/POST /modelos-3d/<id>/editar`
 
 ## Configuração por ambiente
 

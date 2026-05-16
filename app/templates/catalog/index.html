@@ -6,6 +6,9 @@
 <div class="page-hero">
   <h1>Catálogo de Projetos</h1>
   <p>{{ projects|length }} projeto{{ 's' if projects|length != 1 }} cadastrado{{ 's' if projects|length != 1 }}.</p>
+  <div class="hero-actions">
+    <a href="{{ url_for('catalog.create') }}" class="btn btn-primary">Novo Projeto</a>
+  </div>
 </div>
 
 <section class="section">
@@ -18,8 +21,10 @@
         <span class="status status-{{ p.status|lower|replace(' ', '-') }}">{{ p.status }}</span>
       </div>
       <h3>{{ p.name }}</h3>
+      <p><strong>{{ p.code }}</strong> · {{ p.client_name }}</p>
       <p>{{ p.description[:120] }}{% if p.description|length > 120 %}…{% endif %}</p>
       <div class="card-footer">
+        <small>{{ p.location }} · {{ '%.0f'|format(p.area_m2) }} m²</small>
         <small>{{ p.models3d|length }} modelo(s) 3D</small>
       </div>
     </a>

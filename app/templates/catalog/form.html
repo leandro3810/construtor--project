@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if project %}Editar Projeto{% else %}Novo Projeto{% endif %} | Construtor Project{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <a href="{{ url_for('catalog.index') }}" class="back-link">← Projetos</a>
+  <h1>{% if project %}Editar Projeto{% else %}Novo Projeto{% endif %}</h1>
+</div>
+
+<section class="section">
+  <form method="post" class="data-form">
+    {% if error %}
+    <p class="form-error">{{ error }}</p>
+    {% endif %}
+
+    <div class="form-grid">
+      <label>Código*
+        <input type="text" name="code" maxlength="30" required value="{{ form_data.get('code', '') }}">
+      </label>
+      <label>Nome do projeto*
+        <input type="text" name="name" maxlength="120" required value="{{ form_data.get('name', '') }}">
+      </label>
+      <label>Cliente*
+        <input type="text" name="client_name" maxlength="120" required value="{{ form_data.get('client_name', '') }}">
+      </label>
+      <label>Local*
+        <input type="text" name="location" maxlength="120" required value="{{ form_data.get('location', '') }}">
+      </label>
+      <label>Responsável técnico*
+        <input type="text" name="responsible_engineer" maxlength="120" required value="{{ form_data.get('responsible_engineer', '') }}">
+      </label>
+      <label>Categoria*
+        <select name="category" required>
+          {% for option in categories %}
+          <option value="{{ option }}" {% if form_data.get('category') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Status*
+        <select name="status" required>
+          {% for option in statuses %}
+          <option value="{{ option }}" {% if form_data.get('status') == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Área (m²)*
+        <input type="number" name="area_m2" step="0.01" min="0.01" required value="{{ form_data.get('area_m2', '') }}">
+      </label>
+      <label>Orçamento (R$)*
+        <input type="number" name="budget_brl" step="0.01" min="0.01" required value="{{ form_data.get('budget_brl', '') }}">
+      </label>
+      <label>Início
+        <input type="date" name="start_date" value="{{ form_data.get('start_date', '') }}">
+      </label>
+      <label>Término previsto
+        <input type="date" name="expected_end_date" value="{{ form_data.get('expected_end_date', '') }}">
+      </label>
+    </div>
+
+    <label>Descrição*
+      <textarea name="description" rows="5" required>{{ form_data.get('description', '') }}</textarea>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if project %}Salvar alterações{% else %}Cadastrar projeto{% endif %}</button>
+      <a href="{{ url_for('catalog.index') }}" class="btn btn-outline">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
