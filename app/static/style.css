@@ -22,3 +22,9 @@ nav a {
     padding: 2em;
     text-align: center;
 }
+
+.site-footer {
+    padding: 1em;
+    text-align: center;
+    color: #666;
+}
