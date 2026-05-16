@@ -1,53 +1,74 @@
-# Estrutura do Projeto Flask
+# Construtor Project
 
-Este repositório usa a seguinte estrutura base para um projeto Flask:
+Plataforma web para gestão de projetos de construção civil com visualização 3D interativa.
 
-```text
-.
-├── app/
-│   ├── __init__.py
-│   ├── routes.py
-│   ├── static/
-│   │   └── style.css
-│   └── templates/
-│       ├── about.html
-│       ├── base.html
-│       └── index.html
-├── config.py
-├── requirements.txt
-├── run.py
-└── Tests/
-    └── test_route.py
+## Estrutura
+
+```
+app/
+├── blueprints/
+│   ├── main/        ← home, sobre
+│   ├── catalog/     ← catálogo de projetos
+│   └── models3d/    ← visualizador 3D
+├── models/
+│   ├── project.py   ← modelo Project
+│   └── model3d.py   ← modelo Model3D
+├── static/
+│   ├── style.css
+│   └── js/
+│       ├── hero3d.js      ← animação da home
+│       ├── previews3d.js  ← mini-renders nos cards
+│       └── viewer3d.js    ← visualizador completo
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── about.html
+│   ├── catalog/
+│   └── models3d/
+├── extensions.py    ← instância do SQLAlchemy
+└── __init__.py      ← factory + seed de dados
+config.py            ← configuração por ambiente
+run.py
+requirements.txt
+Tests/
+└── test_route.py
 ```
 
-## Versões do framework e runtime
+## Requisitos
 
-- Python: `3.12.3` (validado neste projeto)
-- Framework web: `Flask 3.1.3` (versão estável mais recente)
-- Node.js/React: não aplicável neste repositório (projeto Python/Flask)
+- Python 3.12+
+- pip
 
-## Como rodar o projeto
+## Como rodar
 
-1. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+export FLASK_APP=run.py
+export FLASK_ENV=development
+flask run
+```
 
-2. Exporte as variáveis de ambiente para desenvolvimento (o `.flaskenv` já define apenas `FLASK_APP`):
-   ```bash
-   export FLASK_APP=run.py
-   export FLASK_DEBUG=1
-   ```
+Acesse: `http://127.0.0.1:5000`
 
-3. Rode o servidor:
-   ```bash
-   flask run
-   ```
+O banco SQLite (`construtor.db`) é criado automaticamente na primeira execução com dados de exemplo.
 
-4. Acesse o aplicativo em `http://127.0.0.1:5000`.
+## Configuração por ambiente
+
+| Variável         | Padrão              | Descrição                     |
+|------------------|---------------------|-------------------------------|
+| `FLASK_ENV`      | `development`       | `development` ou `production` |
+| `SECRET_KEY`     | gerada aleatória    | Chave secreta da sessão       |
+| `DATABASE_URL`   | `sqlite:///construtor.db` | URI do banco de dados   |
 
 ## Testes
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
+
+## Tecnologias
+
+- **Flask 3.1** — framework web
+- **Flask-SQLAlchemy** — ORM com SQLite
+- **Three.js** — renderização 3D no navegador
+- **python-dotenv** — variáveis de ambiente

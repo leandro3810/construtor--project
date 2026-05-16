@@ -3,7 +3,50 @@
 {% block title %}Sobre | Construtor Project{% endblock %}
 
 {% block content %}
-<h1>Sobre</h1>
-<p>O Construtor Project é uma aplicação Flask simples usada como base para organização de rotas e templates.</p>
-<p>Esta página apresenta informações gerais do projeto e complementa a navegação da Home.</p>
+<div class="page-hero">
+  <h1>Sobre o Projeto</h1>
+</div>
+
+<section class="section about-grid">
+  <div class="about-text">
+    <h2>O que é o Construtor Project?</h2>
+    <p>
+      O <strong>Construtor Project</strong> é uma plataforma web desenvolvida com
+      <strong>Python/Flask</strong> para organizar, catalogar e visualizar projetos de
+      construção civil e seus modelos tridimensionais.
+    </p>
+    <p>
+      O sistema oferece um catálogo de projetos com categorias (residencial, comercial,
+      industrial e institucional), um módulo de modelos 3D com visualização interativa
+      via <strong>Three.js</strong>, e um banco de dados SQLite com configuração por ambiente.
+    </p>
+    <h2>Tecnologias</h2>
+    <ul class="tech-list">
+      <li><span class="tech-badge">Python 3.12</span></li>
+      <li><span class="tech-badge">Flask 3.1</span></li>
+      <li><span class="tech-badge">Flask-SQLAlchemy</span></li>
+      <li><span class="tech-badge">SQLite</span></li>
+      <li><span class="tech-badge">Three.js</span></li>
+    </ul>
+  </div>
+  <div class="about-structure">
+    <h2>Estrutura do Sistema</h2>
+    <pre class="tree">
+app/
+├── blueprints/
+│   ├── main/        ← home, sobre
+│   ├── catalog/     ← projetos
+│   └── models3d/    ← visualizador 3D
+├── models/
+│   ├── project.py
+│   └── model3d.py
+├── static/
+│   ├── style.css
+│   └── js/
+├── templates/
+config.py
+run.py
+    </pre>
+  </div>
+</section>
 {% endblock %}
