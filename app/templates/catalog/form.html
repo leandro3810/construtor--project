@@ -17,6 +17,7 @@
     <div class="form-grid">
       <label>Código*
         <input type="text" name="code" maxlength="30" required value="{{ form_data.get('code', '') }}">
+        <small class="field-hint">O código será salvo em maiúsculas.</small>
       </label>
       <label>Nome do projeto*
         <input type="text" name="name" maxlength="120" required value="{{ form_data.get('name', '') }}">

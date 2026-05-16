@@ -33,6 +33,7 @@
       </label>
       <label>Formato*
         <input type="text" name="format" maxlength="20" required value="{{ form_data.get('format', '') }}">
+        <small class="field-hint">O formato será salvo em maiúsculas.</small>
       </label>
       <label>Autor*
         <input type="text" name="author_name" maxlength="120" required value="{{ form_data.get('author_name', '') }}">

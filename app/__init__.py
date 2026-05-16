@@ -6,12 +6,14 @@ from config import config_by_name
 from .extensions import db
 
 
-def create_app(config_name: str | None = None) -> Flask:
+def create_app(config_name: str | None = None, config_overrides: dict | None = None) -> Flask:
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'default')
 
     app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
+    if config_overrides:
+        app.config.update(config_overrides)
 
     # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -196,7 +198,14 @@ def _sync_projects_table(existing_columns: set[str]) -> None:
         db.session.execute(text(statement))
 
     if statements:
-        db.session.execute(text("UPDATE projects SET code = printf('LEG-%04d', id) WHERE code IS NULL OR trim(code) = ''"))
+        project_ids_without_code = db.session.execute(
+            text("SELECT id FROM projects WHERE code IS NULL OR trim(code) = ''")
+        ).scalars().all()
+        for project_id in project_ids_without_code:
+            db.session.execute(
+                text('UPDATE projects SET code = :code WHERE id = :id'),
+                {'code': f'CP-LEG-{project_id:04d}', 'id': project_id},
+            )
         db.session.execute(text("UPDATE projects SET client_name = 'Cliente não informado' WHERE client_name IS NULL OR trim(client_name) = ''"))
         db.session.execute(text("UPDATE projects SET location = 'Local não informado' WHERE location IS NULL OR trim(location) = ''"))
         db.session.execute(text("UPDATE projects SET responsible_engineer = 'Responsável não informado' WHERE responsible_engineer IS NULL OR trim(responsible_engineer) = ''"))

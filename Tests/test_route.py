@@ -1,16 +1,15 @@
-import os
 import pytest
 from app import create_app
 
 
 @pytest.fixture
 def client():
-    os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
-    app = create_app('development')
-    app.config['TESTING'] = True
+    app = create_app('development', {
+        'TESTING': True,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+    })
     with app.app_context():
         from app.extensions import db
-        db.drop_all()
         db.create_all()
         from app import _seed_data
         _seed_data()

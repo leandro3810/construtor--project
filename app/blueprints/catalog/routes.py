@@ -160,7 +160,7 @@ def _validate_project_form(form: dict) -> tuple[dict | None, str | None]:
         return None, 'Data de início inválida.'
     if expected_end_date_raw and expected_end_date is None:
         return None, 'Data prevista de término inválida.'
-    if start_date and expected_end_date and expected_end_date < start_date:
+    if start_date and expected_end_date and expected_end_date <= start_date:
         return None, 'A data prevista de término deve ser posterior à data de início.'
 
     return {
