@@ -35,7 +35,7 @@
         <li><strong>Responsável</strong><span>{{ project.responsible_engineer }}</span></li>
         <li><strong>Área</strong><span>{{ '%.2f'|format(project.area_m2) }} m²</span></li>
         <li><strong>Orçamento</strong>
-          <span>R$ {{ '{:,.2f}'.format(project.budget_brl).replace(',', 'X').replace('.', ',').replace('X', '.') }}</span>
+          <span>R$ {{ project.budget_brl | brl }}</span>
         </li>
         <li><strong>Início</strong><span>{{ project.start_date.strftime('%d/%m/%Y') if project.start_date else '—' }}</span></li>
         <li><strong>Término previsto</strong><span>{{ project.expected_end_date.strftime('%d/%m/%Y') if project.expected_end_date else '—' }}</span></li>

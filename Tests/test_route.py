@@ -153,6 +153,7 @@ def test_project_edit(client):
 def test_project_delete(client):
     response = client.post('/projetos/1/excluir', follow_redirects=True)
     assert response.status_code == 200
+    assert 'excluído com sucesso'.encode() in response.data
     # Projeto deve ter sido removido
     detail = client.get('/projetos/1')
     assert detail.status_code == 404
@@ -231,6 +232,7 @@ def test_model_create_invalid(client):
 def test_model_delete(client):
     response = client.post('/modelos-3d/1/excluir', follow_redirects=True)
     assert response.status_code == 200
+    assert 'excluído com sucesso'.encode() in response.data
     detail = client.get('/modelos-3d/1')
     assert detail.status_code == 404
 
