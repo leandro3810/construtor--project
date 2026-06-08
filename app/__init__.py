@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, datetime, timezone
 from flask import Flask
 from sqlalchemy import inspect, text
 from config import config_by_name
@@ -29,6 +29,11 @@ def create_app(config_name: str | None = None, config_overrides: dict | None = N
     app.register_blueprint(main)
     app.register_blueprint(catalog)
     app.register_blueprint(models3d)
+
+    # Inject current datetime into all templates
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.now(timezone.utc)}
 
     # Create tables and seed data
     with app.app_context():
