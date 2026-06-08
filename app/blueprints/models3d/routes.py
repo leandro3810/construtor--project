@@ -1,4 +1,4 @@
-from flask import render_template, abort, request, redirect, url_for
+from flask import render_template, abort, request, redirect, url_for, flash
 from app.extensions import db
 from app.models import Model3D, Project
 from . import models3d
@@ -40,6 +40,7 @@ def create():
         model = Model3D(**form_data)
         db.session.add(model)
         db.session.commit()
+        flash(f'Modelo "{model.name}" criado com sucesso.', 'success')
         return redirect(url_for('models3d.viewer', model_id=model.id))
 
     return render_template(
@@ -76,6 +77,7 @@ def edit(model_id):
         for field, value in form_data.items():
             setattr(modelo, field, value)
         db.session.commit()
+        flash(f'Modelo "{modelo.name}" atualizado com sucesso.', 'success')
         return redirect(url_for('models3d.viewer', model_id=modelo.id))
 
     return render_template(
@@ -87,6 +89,18 @@ def edit(model_id):
         projects=projects,
         error=None,
     )
+
+
+@models3d.route('/<int:model_id>/excluir', methods=['POST'])
+def delete(model_id):
+    modelo = db.session.get(Model3D, model_id)
+    if modelo is None:
+        abort(404)
+    name = modelo.name
+    db.session.delete(modelo)
+    db.session.commit()
+    flash(f'Modelo "{name}" excluído com sucesso.', 'success')
+    return redirect(url_for('models3d.index'))
 
 
 def _model_to_form(modelo: Model3D) -> dict:

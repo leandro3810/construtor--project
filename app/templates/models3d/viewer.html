@@ -8,16 +8,17 @@
   <h1>{{ modelo.name }}</h1>
   <div class="meta-row">
     <span class="badge badge-outline">{{ modelo.category }}</span>
-    <span class="badge badge-outline">{{ modelo.validation_status }}</span>
+    <span class="badge badge-outline" style="{% if modelo.validation_status == 'Aprovado' %}color:var(--green);border-color:rgba(46,204,143,0.3){% elif modelo.validation_status == 'Pendente' %}color:var(--yellow);border-color:rgba(255,179,71,0.3){% else %}color:var(--blue);border-color:rgba(91,143,255,0.3){% endif %}">{{ modelo.validation_status }}</span>
     {% if modelo.project %}
     <a href="{{ url_for('catalog.detail', project_id=modelo.project.id) }}" class="meta-link">
-      Projeto: {{ modelo.project.name }}
+      📁 {{ modelo.project.name }}
     </a>
     {% endif %}
-    <small>Criado em {{ modelo.created_at.strftime('%d/%m/%Y') }}</small>
+    <small style="color:var(--text-3);">Criado em {{ modelo.created_at.strftime('%d/%m/%Y') }}</small>
   </div>
-  <div class="hero-actions">
-    <a href="{{ url_for('models3d.edit', model_id=modelo.id) }}" class="btn btn-outline">Editar Modelo</a>
+  <div class="hero-actions" style="margin-top:1rem;">
+    <a href="{{ url_for('models3d.edit', model_id=modelo.id) }}" class="btn btn-outline">Editar</a>
+    <button class="btn btn-danger" onclick="document.getElementById('confirm-delete').style.display='flex'">Excluir</button>
   </div>
 </div>
 
@@ -25,28 +26,45 @@
   <div class="viewer-container">
     <canvas id="viewer-canvas"></canvas>
     <div class="viewer-controls">
-      <button id="btn-wireframe" class="btn btn-sm">Wireframe</button>
+      <button id="btn-wireframe" class="btn btn-sm btn-ghost">Wireframe</button>
       <button id="btn-solid" class="btn btn-sm btn-primary">Sólido</button>
-      <button id="btn-reset" class="btn btn-sm">Resetar câmera</button>
+      <button id="btn-reset" class="btn btn-sm btn-ghost">Resetar câmera</button>
     </div>
     <p class="viewer-hint">Arraste para orbitar · Scroll para zoom · Botão direito para mover</p>
   </div>
+
   <div class="viewer-info">
-    <h2>Descrição</h2>
-    <p>{{ modelo.description }}</p>
-    <h2>Dados técnicos</h2>
-    <ul class="data-list">
-      <li><strong>Categoria:</strong> {{ modelo.category }}</li>
-      <li><strong>Disciplina:</strong> {{ modelo.discipline }}</li>
-      <li><strong>Formato:</strong> {{ modelo.format }}</li>
-      <li><strong>Versão:</strong> {{ modelo.version }}</li>
-      <li><strong>Autor:</strong> {{ modelo.author_name }}</li>
-      <li><strong>Status:</strong> {{ modelo.validation_status }}</li>
-      <li><strong>Tamanho:</strong> {{ '%.2f'|format(modelo.file_size_mb) }} MB</li>
-      <li><strong>Arquivo:</strong> {{ modelo.file_name or 'Não informado' }}</li>
-    </ul>
+    <div class="detail-card">
+      <p class="detail-section-title">Descrição</p>
+      <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">{{ modelo.description }}</p>
+    </div>
+    <div class="detail-card">
+      <p class="detail-section-title">Dados técnicos</p>
+      <ul class="data-list">
+        <li><strong>Disciplina</strong><span>{{ modelo.discipline }}</span></li>
+        <li><strong>Formato</strong><span>{{ modelo.format }}</span></li>
+        <li><strong>Versão</strong><span>{{ modelo.version }}</span></li>
+        <li><strong>Autor</strong><span>{{ modelo.author_name }}</span></li>
+        <li><strong>Tamanho</strong><span>{{ '%.2f'|format(modelo.file_size_mb) }} MB</span></li>
+        <li><strong>Arquivo</strong><span style="word-break:break-all;">{{ modelo.file_name or '—' }}</span></li>
+      </ul>
+    </div>
   </div>
 </section>
+
+<!-- Confirm delete -->
+<div id="confirm-delete" class="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <h3>Excluir modelo?</h3>
+    <p>Esta ação removerá <strong>{{ modelo.name }}</strong> permanentemente.</p>
+    <div class="confirm-actions">
+      <form method="post" action="{{ url_for('models3d.delete', model_id=modelo.id) }}">
+        <button type="submit" class="btn btn-danger">Sim, excluir</button>
+      </form>
+      <button class="btn btn-ghost" onclick="document.getElementById('confirm-delete').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.163.0/examples/js/controls/OrbitControls.js"></script>

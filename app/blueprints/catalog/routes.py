@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, abort, request, redirect, url_for
+from flask import render_template, abort, request, redirect, url_for, flash
 from app.extensions import db
 from app.models import Project
 from . import catalog
@@ -10,8 +10,32 @@ PROJECT_STATUS = ['Planejamento', 'Em andamento', 'Concluído']
 
 @catalog.route('/')
 def index():
-    projects = Project.query.order_by(Project.created_at.desc()).all()
-    return render_template('catalog/index.html', projects=projects)
+    query = Project.query
+    q = (request.args.get('q') or '').strip()
+    category = (request.args.get('category') or '').strip()
+    status = (request.args.get('status') or '').strip()
+
+    if q:
+        like = f'%{q}%'
+        query = query.filter(
+            db.or_(
+                Project.name.ilike(like),
+                Project.code.ilike(like),
+                Project.client_name.ilike(like),
+            )
+        )
+    if category and category in PROJECT_CATEGORIES:
+        query = query.filter(Project.category == category)
+    if status and status in PROJECT_STATUS:
+        query = query.filter(Project.status == status)
+
+    projects = query.order_by(Project.created_at.desc()).all()
+    return render_template(
+        'catalog/index.html',
+        projects=projects,
+        categories=PROJECT_CATEGORIES,
+        statuses=PROJECT_STATUS,
+    )
 
 
 @catalog.route('/<int:project_id>')
@@ -50,6 +74,7 @@ def create():
         project = Project(**form_data)
         db.session.add(project)
         db.session.commit()
+        flash(f'Projeto "{project.name}" criado com sucesso.', 'success')
         return redirect(url_for('catalog.detail', project_id=project.id))
 
     return render_template(
@@ -94,6 +119,7 @@ def edit(project_id):
         for field, value in form_data.items():
             setattr(project, field, value)
         db.session.commit()
+        flash(f'Projeto "{project.name}" atualizado com sucesso.', 'success')
         return redirect(url_for('catalog.detail', project_id=project.id))
 
     return render_template(
@@ -104,6 +130,18 @@ def edit(project_id):
         statuses=PROJECT_STATUS,
         error=None,
     )
+
+
+@catalog.route('/<int:project_id>/excluir', methods=['POST'])
+def delete(project_id):
+    project = db.session.get(Project, project_id)
+    if project is None:
+        abort(404)
+    name = project.name
+    db.session.delete(project)
+    db.session.commit()
+    flash(f'Projeto "{name}" excluído com sucesso.', 'success')
+    return redirect(url_for('catalog.index'))
 
 
 def _project_to_form(project: Project) -> dict:

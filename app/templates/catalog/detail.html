@@ -10,46 +10,89 @@
     <span class="badge badge-{{ project.category|lower|replace(' ', '-') }}">{{ project.category }}</span>
     <span class="status status-{{ project.status|lower|replace(' ', '-') }}">{{ project.status }}</span>
     <span class="badge badge-outline">{{ project.code }}</span>
-    <small>Criado em {{ project.created_at.strftime('%d/%m/%Y') }}</small>
+    <small style="color:var(--text-3);">Criado em {{ project.created_at.strftime('%d/%m/%Y') }}</small>
   </div>
-  <div class="hero-actions">
-    <a href="{{ url_for('catalog.edit', project_id=project.id) }}" class="btn btn-outline">Editar Projeto</a>
+  <div class="hero-actions" style="margin-top:1rem;">
+    <a href="{{ url_for('catalog.edit', project_id=project.id) }}" class="btn btn-outline">Editar</a>
+    <button class="btn btn-danger" onclick="document.getElementById('confirm-delete').style.display='flex'">Excluir</button>
   </div>
 </div>
 
 <section class="section detail-grid">
-  <div class="detail-desc">
-    <h2>Descrição</h2>
-    <p>{{ project.description }}</p>
-    <h2>Dados do Projeto</h2>
-    <ul class="data-list">
-      <li><strong>Cliente:</strong> {{ project.client_name }}</li>
-      <li><strong>Local:</strong> {{ project.location }}</li>
-      <li><strong>Responsável técnico:</strong> {{ project.responsible_engineer }}</li>
-      <li><strong>Área:</strong> {{ '%.2f'|format(project.area_m2) }} m²</li>
-      <li><strong>Orçamento:</strong> R$ {{ '%.2f'|format(project.budget_brl) }}</li>
-      <li><strong>Início:</strong> {{ project.start_date.strftime('%d/%m/%Y') if project.start_date else '-' }}</li>
-      <li><strong>Término previsto:</strong> {{ project.expected_end_date.strftime('%d/%m/%Y') if project.expected_end_date else '-' }}</li>
-    </ul>
+  <div style="display:flex;flex-direction:column;gap:1.5rem;">
+    <div class="detail-card">
+      <p class="detail-section-title">Descrição</p>
+      <div class="detail-desc">
+        <p>{{ project.description }}</p>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <p class="detail-section-title">Dados do Projeto</p>
+      <ul class="data-list">
+        <li><strong>Cliente</strong><span>{{ project.client_name }}</span></li>
+        <li><strong>Local</strong><span>{{ project.location }}</span></li>
+        <li><strong>Responsável</strong><span>{{ project.responsible_engineer }}</span></li>
+        <li><strong>Área</strong><span>{{ '%.2f'|format(project.area_m2) }} m²</span></li>
+        <li><strong>Orçamento</strong>
+          <span>R$ {{ '{:,.2f}'.format(project.budget_brl).replace(',', 'X').replace('.', ',').replace('X', '.') }}</span>
+        </li>
+        <li><strong>Início</strong><span>{{ project.start_date.strftime('%d/%m/%Y') if project.start_date else '—' }}</span></li>
+        <li><strong>Término previsto</strong><span>{{ project.expected_end_date.strftime('%d/%m/%Y') if project.expected_end_date else '—' }}</span></li>
+      </ul>
+
+      {% if project.start_date and project.expected_end_date %}
+      {% set today = now.date() %}
+      {% set total_days = (project.expected_end_date - project.start_date).days %}
+      {% set elapsed = (today - project.start_date).days %}
+      {% set pct = [[elapsed * 100 // total_days if total_days > 0 else 0, 0]|max, 100]|min %}
+      <div class="progress-wrap" style="margin-top:1rem;">
+        <div class="progress-label">
+          <span>Progresso estimado</span>
+          <span>{{ pct }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:{{ pct }}%"></div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
   </div>
 
-  <div class="detail-models">
-    <h2>Modelos 3D ({{ project.models3d|length }})</h2>
+  <div class="detail-card">
+    <p class="detail-section-title">Modelos 3D ({{ project.models3d|length }})</p>
     {% if project.models3d %}
     <ul class="model-list">
       {% for m in project.models3d %}
       <li>
         <a href="{{ url_for('models3d.viewer', model_id=m.id) }}">
           <span class="model-icon">🧊</span>
-          <span>{{ m.name }}</span>
+          <span style="flex:1;">{{ m.name }}</span>
           <span class="badge badge-outline">{{ m.category }}</span>
         </a>
       </li>
       {% endfor %}
     </ul>
     {% else %}
-    <p class="empty-state">Nenhum modelo 3D associado.</p>
+    <div class="empty-state" style="padding:2rem 0;">
+      <p class="empty-state-text">Nenhum modelo 3D associado.</p>
+      <a href="{{ url_for('models3d.create') }}" class="btn btn-ghost btn-sm" style="margin-top:0.5rem;">Adicionar modelo</a>
+    </div>
     {% endif %}
   </div>
 </section>
+
+<!-- Confirm delete -->
+<div id="confirm-delete" class="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <h3>Excluir projeto?</h3>
+    <p>Esta ação removerá <strong>{{ project.name }}</strong> e todos os seus modelos 3D associados. Não há como desfazer.</p>
+    <div class="confirm-actions">
+      <form method="post" action="{{ url_for('catalog.delete', project_id=project.id) }}">
+        <button type="submit" class="btn btn-danger">Sim, excluir</button>
+      </form>
+      <button class="btn btn-ghost" onclick="document.getElementById('confirm-delete').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+</div>
 {% endblock %}
