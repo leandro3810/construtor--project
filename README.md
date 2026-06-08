@@ -88,7 +88,7 @@ pip install pytest
 python -m pytest -q
 ```
 
-Suite: **27 testes** cobrindo todas as rotas (CRUD, filtros, exclusão, 404, validações).
+Suíte: **27 testes** cobrindo todas as rotas (CRUD, filtros, exclusão, 404, validações).
 
 ## Stack
 
