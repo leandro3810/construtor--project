@@ -5,11 +5,25 @@
 {% block content %}
 <section class="hero">
   <div class="hero-content">
+    <div class="hero-eyebrow">✦ Plataforma de Construção Civil</div>
     <h1>Construtor Project</h1>
-    <p class="hero-sub">Plataforma de projetos de construção civil com visualização 3D interativa.</p>
+    <p class="hero-sub">
+      Gerencie projetos e modelos 3D de construção civil com
+      visualização interativa, categorização completa e fluxo de trabalho profissional.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ total_projects }}</span>
+        <span class="stat-label">Projetos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ total_models }}</span>
+        <span class="stat-label">Modelos 3D</span>
+      </div>
+    </div>
     <div class="hero-actions">
-      <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Ver Projetos</a>
-      <a href="{{ url_for('models3d.index') }}" class="btn btn-outline">Explorar Modelos 3D</a>
+      <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Ver Projetos →</a>
+      <a href="{{ url_for('models3d.index') }}" class="btn btn-ghost">Explorar Modelos 3D</a>
     </div>
   </div>
   <div class="hero-visual" aria-hidden="true">
@@ -23,17 +37,17 @@
     <div class="card">
       <div class="card-icon">🏗️</div>
       <h3>Catálogo de Projetos</h3>
-      <p>Gerencie e visualize projetos residenciais, comerciais e industriais em um só lugar.</p>
+      <p>Gerencie projetos residenciais, comerciais, industriais e institucionais com busca e filtros por categoria e status.</p>
     </div>
     <div class="card">
       <div class="card-icon">🧊</div>
       <h3>Modelos 3D Interativos</h3>
-      <p>Explore estruturas e arquiteturas em três dimensões diretamente no navegador.</p>
+      <p>Visualize estruturas e arquiteturas em três dimensões no navegador com controle de câmera via Three.js.</p>
     </div>
     <div class="card">
-      <div class="card-icon">⚙️</div>
-      <h3>Configuração Simples</h3>
-      <p>Dados persistidos em banco local, fácil de customizar e expandir conforme o projeto cresce.</p>
+      <div class="card-icon">📊</div>
+      <h3>Gestão Completa</h3>
+      <p>Crie, edite e exclua projetos e modelos 3D com validação de formulários e feedback visual em tempo real.</p>
     </div>
   </div>
 </section>

@@ -5,13 +5,44 @@
 {% block content %}
 <div class="page-hero">
   <h1>Catálogo de Projetos</h1>
-  <p>{{ projects|length }} projeto{{ 's' if projects|length != 1 }} cadastrado{{ 's' if projects|length != 1 }}.</p>
-  <div class="hero-actions">
-    <a href="{{ url_for('catalog.create') }}" class="btn btn-primary">Novo Projeto</a>
+  <p style="color:var(--text-2);margin-top:0.35rem;font-size:0.9rem;">
+    {{ projects|length }} projeto{{ 's' if projects|length != 1 }} encontrado{{ 's' if projects|length != 1 }}.
+  </p>
+  <div class="hero-actions" style="margin-top:1rem;">
+    <a href="{{ url_for('catalog.create') }}" class="btn btn-primary">+ Novo Projeto</a>
   </div>
 </div>
 
 <section class="section">
+  <div class="filter-bar">
+    <form method="get" action="{{ url_for('catalog.index') }}">
+      <input
+        class="filter-search"
+        type="search"
+        name="q"
+        placeholder="Buscar projeto por nome, código ou cliente…"
+        value="{{ request.args.get('q', '') }}"
+        autocomplete="off"
+      >
+      <select class="filter-select" name="category" onchange="this.form.submit()">
+        <option value="">Todas categorias</option>
+        {% for cat in categories %}
+        <option value="{{ cat }}" {% if request.args.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <select class="filter-select" name="status" onchange="this.form.submit()">
+        <option value="">Todos status</option>
+        {% for st in statuses %}
+        <option value="{{ st }}" {% if request.args.get('status') == st %}selected{% endif %}>{{ st }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-ghost btn-sm">Filtrar</button>
+      {% if request.args.get('q') or request.args.get('category') or request.args.get('status') %}
+      <a href="{{ url_for('catalog.index') }}" class="btn btn-ghost btn-sm">✕ Limpar</a>
+      {% endif %}
+    </form>
+  </div>
+
   {% if projects %}
   <div class="cards">
     {% for p in projects %}
@@ -21,17 +52,21 @@
         <span class="status status-{{ p.status|lower|replace(' ', '-') }}">{{ p.status }}</span>
       </div>
       <h3>{{ p.name }}</h3>
-      <p><strong>{{ p.code }}</strong> · {{ p.client_name }}</p>
-      <p>{{ p.description[:120] }}{% if p.description|length > 120 %}…{% endif %}</p>
+      <p style="font-size:0.8rem;color:var(--text-3);margin-bottom:0.1rem;">{{ p.code }}</p>
+      <p>{{ p.description[:110] }}{% if p.description|length > 110 %}…{% endif %}</p>
       <div class="card-footer">
-        <small>{{ p.location }} · {{ '%.0f'|format(p.area_m2) }} m²</small>
-        <small>{{ p.models3d|length }} modelo(s) 3D</small>
+        <small>📍 {{ p.location }}</small>
+        <small>{{ '%.0f'|format(p.area_m2) }} m²  ·  {{ p.models3d|length }} modelo(s)</small>
       </div>
     </a>
     {% endfor %}
   </div>
   {% else %}
-  <p class="empty-state">Nenhum projeto cadastrado ainda.</p>
+  <div class="empty-state">
+    <div class="empty-state-icon">🏗️</div>
+    <p class="empty-state-text">Nenhum projeto encontrado com os filtros aplicados.</p>
+    <a href="{{ url_for('catalog.create') }}" class="btn btn-primary" style="margin-top:0.5rem;">Cadastrar primeiro projeto</a>
+  </div>
   {% endif %}
 </section>
 {% endblock %}

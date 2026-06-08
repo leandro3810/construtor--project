@@ -11,65 +11,88 @@
 <section class="section">
   <form method="post" class="data-form">
     {% if error %}
-    <p class="form-error">{{ error }}</p>
+    <div class="form-error">⚠ {{ error }}</div>
     {% endif %}
 
-    <div class="form-grid">
-      <label>Nome*
-        <input type="text" name="name" maxlength="120" required value="{{ form_data.get('name', '') }}">
-      </label>
-      <label>Categoria*
-        <select name="category" required>
-          {% for option in categories %}
-          <option value="{{ option }}" {% if form_data.get('category') == option %}selected{% endif %}>{{ option }}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <label>Disciplina*
-        <input type="text" name="discipline" maxlength="60" required value="{{ form_data.get('discipline', '') }}">
-      </label>
-      <label>Versão*
-        <input type="text" name="version" maxlength="20" required value="{{ form_data.get('version', '') }}">
-      </label>
-      <label>Formato*
-        <input type="text" name="format" maxlength="20" required value="{{ form_data.get('format', '') }}">
-        <small class="field-hint">O formato será salvo em maiúsculas.</small>
-      </label>
-      <label>Autor*
-        <input type="text" name="author_name" maxlength="120" required value="{{ form_data.get('author_name', '') }}">
-      </label>
-      <label>Status de validação*
-        <select name="validation_status" required>
-          {% for option in validation_statuses %}
-          <option value="{{ option }}" {% if form_data.get('validation_status') == option %}selected{% endif %}>{{ option }}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <label>Tamanho do arquivo (MB)*
-        <input type="number" name="file_size_mb" step="0.01" min="0.01" required value="{{ form_data.get('file_size_mb', '') }}">
-      </label>
-      <label>Arquivo (nome)
-        <input type="text" name="file_name" maxlength="255" value="{{ form_data.get('file_name', '') }}">
-      </label>
-      <label>Projeto associado*
-        <select name="project_id" required>
-          <option value="">Selecione</option>
-          {% for project in projects %}
-          <option value="{{ project.id }}" {% if form_data.get('project_id') == project.id|string %}selected{% endif %}>
-            {{ project.code }} — {{ project.name }}
-          </option>
-          {% endfor %}
-        </select>
-      </label>
+    <div class="form-section">
+      <p class="form-section-title">Identificação</p>
+      <div class="form-grid">
+        <div class="form-group col-span-2">
+          <label class="form-label">Nome <span class="form-required">*</span></label>
+          <input type="text" name="name" maxlength="120" required value="{{ form_data.get('name', '') }}" placeholder="Ex: Estrutura Residencial — Planta Isométrica">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoria <span class="form-required">*</span></label>
+          <select name="category" required>
+            {% for option in categories %}
+            <option value="{{ option }}" {% if form_data.get('category') == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Disciplina <span class="form-required">*</span></label>
+          <input type="text" name="discipline" maxlength="60" required value="{{ form_data.get('discipline', '') }}" placeholder="Ex: Estruturas">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Versão <span class="form-required">*</span></label>
+          <input type="text" name="version" maxlength="20" required value="{{ form_data.get('version', '') }}" placeholder="v1.0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Formato <span class="form-required">*</span></label>
+          <input type="text" name="format" maxlength="20" required value="{{ form_data.get('format', '') }}" placeholder="GLB, IFC, GLTF…">
+          <span class="field-hint">Será salvo em maiúsculas.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Autor <span class="form-required">*</span></label>
+          <input type="text" name="author_name" maxlength="120" required value="{{ form_data.get('author_name', '') }}" placeholder="Nome da equipe ou autor">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status de validação <span class="form-required">*</span></label>
+          <select name="validation_status" required>
+            {% for option in validation_statuses %}
+            <option value="{{ option }}" {% if form_data.get('validation_status') == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
     </div>
 
-    <label>Descrição*
-      <textarea name="description" rows="5" required>{{ form_data.get('description', '') }}</textarea>
-    </label>
+    <div class="form-section">
+      <p class="form-section-title">Arquivo &amp; Associação</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Tamanho do arquivo (MB) <span class="form-required">*</span></label>
+          <input type="number" name="file_size_mb" step="0.01" min="0.01" required value="{{ form_data.get('file_size_mb', '') }}" placeholder="52.3">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome do arquivo</label>
+          <input type="text" name="file_name" maxlength="255" value="{{ form_data.get('file_name', '') }}" placeholder="modelo.glb">
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Projeto associado <span class="form-required">*</span></label>
+          <select name="project_id" required>
+            <option value="">Selecione um projeto…</option>
+            {% for project in projects %}
+            <option value="{{ project.id }}" {% if form_data.get('project_id') == project.id|string %}selected{% endif %}>
+              {{ project.code }} — {{ project.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <p class="form-section-title">Descrição</p>
+      <div class="form-group">
+        <label class="form-label">Descrição do modelo <span class="form-required">*</span></label>
+        <textarea name="description" rows="5" required placeholder="Descreva os detalhes técnicos do modelo 3D…">{{ form_data.get('description', '') }}</textarea>
+      </div>
+    </div>
 
     <div class="form-actions">
       <button type="submit" class="btn btn-primary">{% if modelo %}Salvar alterações{% else %}Cadastrar modelo{% endif %}</button>
-      <a href="{{ url_for('models3d.index') }}" class="btn btn-outline">Cancelar</a>
+      <a href="{{ url_for('models3d.index') }}" class="btn btn-ghost">Cancelar</a>
     </div>
   </form>
 </section>

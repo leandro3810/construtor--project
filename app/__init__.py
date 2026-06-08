@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, datetime, timezone
 from flask import Flask
 from sqlalchemy import inspect, text
 from config import config_by_name
@@ -29,6 +29,25 @@ def create_app(config_name: str | None = None, config_overrides: dict | None = N
     app.register_blueprint(main)
     app.register_blueprint(catalog)
     app.register_blueprint(models3d)
+
+    # Inject current datetime into all templates
+    @app.context_processor
+    def inject_now():
+        return {'now': datetime.now(timezone.utc)}
+
+    # Jinja filter: Brazilian currency format  (e.g. 1850000.0 → "1.850.000,00")
+    @app.template_filter('brl')
+    def format_brl(value: float) -> str:
+        try:
+            integer, decimal = f'{float(value):.2f}'.split('.')
+            groups = []
+            while len(integer) > 3:
+                groups.append(integer[-3:])
+                integer = integer[:-3]
+            groups.append(integer)
+            return ','.join(['.'.join(reversed(groups)), decimal])
+        except (TypeError, ValueError):
+            return str(value)
 
     # Create tables and seed data
     with app.app_context():

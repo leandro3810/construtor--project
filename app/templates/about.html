@@ -3,36 +3,38 @@
 {% block title %}Sobre | Construtor Project{% endblock %}
 
 {% block content %}
-<div class="page-hero">
-  <h1>Sobre o Projeto</h1>
+<div class="about-hero">
+  <h1>Construtor Project</h1>
+  <p>Plataforma web para gestão e visualização de projetos de construção civil com modelos 3D interativos.</p>
 </div>
 
-<section class="section about-grid">
-  <div class="about-text">
-    <h2>O que é o Construtor Project?</h2>
+<div class="about-grid">
+  <div class="about-card">
+    <h2>Sobre o projeto</h2>
     <p>
-      O <strong>Construtor Project</strong> é uma plataforma web desenvolvida com
+      O <strong>Construtor Project</strong> é uma plataforma desenvolvida com
       <strong>Python/Flask</strong> para organizar, catalogar e visualizar projetos de
       construção civil e seus modelos tridimensionais.
     </p>
     <p>
-      O sistema oferece um catálogo de projetos com categorias (residencial, comercial,
-      industrial e institucional), um módulo de modelos 3D com visualização interativa
-      via <strong>Three.js</strong>, e um banco de dados SQLite com configuração por ambiente.
+      Oferece catálogo de projetos com filtros por categoria e status, módulo de modelos 3D
+      com visualização interativa via <strong>Three.js</strong>, gestão completa (criar, editar,
+      excluir) e banco de dados SQLite com configuração por ambiente.
     </p>
-    <h2>Tecnologias</h2>
-    <ul class="tech-list">
+    <h2 style="margin-top:1.25rem;">Stack de tecnologias</h2>
+    <ul class="tech-list" style="margin-top:0.75rem;">
       <li><span class="tech-badge">Python 3.12</span></li>
       <li><span class="tech-badge">Flask 3.1</span></li>
       <li><span class="tech-badge">Flask-SQLAlchemy</span></li>
       <li><span class="tech-badge">SQLite</span></li>
       <li><span class="tech-badge">Three.js</span></li>
+      <li><span class="tech-badge">pytest</span></li>
     </ul>
   </div>
-  <div class="about-structure">
-    <h2>Estrutura do Sistema</h2>
-    <pre class="tree">
-app/
+
+  <div class="about-card">
+    <h2>Estrutura do sistema</h2>
+    <pre class="tree">app/
 ├── blueprints/
 │   ├── main/        ← home, sobre
 │   ├── catalog/     ← projetos
@@ -43,10 +45,24 @@ app/
 ├── static/
 │   ├── style.css
 │   └── js/
+│       ├── hero3d.js
+│       ├── previews3d.js
+│       └── viewer3d.js
 ├── templates/
+└── __init__.py
 config.py
 run.py
-    </pre>
+Tests/test_route.py</pre>
+
+    <h2 style="margin-top:1.25rem;">Funcionalidades</h2>
+    <ul style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.4rem;list-style:none;">
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ Catálogo com busca e filtros</li>
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ Detalhe de projeto com barra de progresso</li>
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ Visualizador 3D interativo (orbit/zoom/pan)</li>
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ CRUD completo com flash messages</li>
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ Confirmação de exclusão</li>
+      <li style="color:var(--text-2);font-size:0.875rem;">✦ Design responsivo e dark theme</li>
+    </ul>
   </div>
-</section>
+</div>
 {% endblock %}

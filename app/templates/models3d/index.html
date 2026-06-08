@@ -5,9 +5,11 @@
 {% block content %}
 <div class="page-hero">
   <h1>Modelos 3D</h1>
-  <p>{{ modelos|length }} modelo{{ 's' if modelos|length != 1 }} disponíve{{ 'is' if modelos|length != 1 else 'l' }}.</p>
-  <div class="hero-actions">
-    <a href="{{ url_for('models3d.create') }}" class="btn btn-primary">Novo Modelo 3D</a>
+  <p style="color:var(--text-2);margin-top:0.35rem;font-size:0.9rem;">
+    {{ modelos|length }} modelo{{ 's' if modelos|length != 1 }} disponíve{{ 'is' if modelos|length != 1 else 'l' }}.
+  </p>
+  <div class="hero-actions" style="margin-top:1rem;">
+    <a href="{{ url_for('models3d.create') }}" class="btn btn-primary">+ Novo Modelo 3D</a>
   </div>
 </div>
 
@@ -18,23 +20,26 @@
     <a href="{{ url_for('models3d.viewer', model_id=m.id) }}" class="card card-link card-3d">
       <div class="card-header">
         <span class="badge badge-outline">{{ m.category }}</span>
+        <span class="badge badge-outline" style="{% if m.validation_status == 'Aprovado' %}color:var(--green);border-color:rgba(46,204,143,0.3){% elif m.validation_status == 'Pendente' %}color:var(--yellow);border-color:rgba(255,179,71,0.3){% else %}color:var(--blue);border-color:rgba(91,143,255,0.3){% endif %}">{{ m.validation_status }}</span>
       </div>
       <div class="card-preview" aria-hidden="true">
         <canvas class="preview-canvas" data-model-id="{{ m.id }}"></canvas>
       </div>
       <h3>{{ m.name }}</h3>
-      <p>{{ m.description[:100] }}{% if m.description|length > 100 %}…{% endif %}</p>
-      <p><strong>{{ m.format }}</strong> · {{ m.version }} · {{ '%.2f'|format(m.file_size_mb) }} MB</p>
-      {% if m.project %}
+      <p>{{ m.description[:95] }}{% if m.description|length > 95 %}…{% endif %}</p>
       <div class="card-footer">
-        <small>Projeto: {{ m.project.name }}</small>
+        <small><strong>{{ m.format }}</strong> · {{ m.version }}</small>
+        <small>{{ '%.1f'|format(m.file_size_mb) }} MB</small>
       </div>
-      {% endif %}
     </a>
     {% endfor %}
   </div>
   {% else %}
-  <p class="empty-state">Nenhum modelo 3D cadastrado ainda.</p>
+  <div class="empty-state">
+    <div class="empty-state-icon">🧊</div>
+    <p class="empty-state-text">Nenhum modelo 3D cadastrado ainda.</p>
+    <a href="{{ url_for('models3d.create') }}" class="btn btn-primary" style="margin-top:0.5rem;">Cadastrar primeiro modelo</a>
+  </div>
   {% endif %}
 </section>
 

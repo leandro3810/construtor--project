@@ -17,18 +17,39 @@ def client():
         yield client
 
 
+# ── Main ──────────────────────────────────────────────────────────────
 def test_home(client):
     response = client.get('/')
     assert response.status_code == 200
+    assert 'Construtor Project'.encode() in response.data
 
 
 def test_about(client):
     response = client.get('/sobre')
     assert response.status_code == 200
+    assert 'Flask'.encode() in response.data
 
 
+# ── Catalog ───────────────────────────────────────────────────────────
 def test_catalog_index(client):
     response = client.get('/projetos/')
+    assert response.status_code == 200
+    assert 'Residência Moderna'.encode() in response.data
+
+
+def test_catalog_index_filter_category(client):
+    response = client.get('/projetos/?category=Residencial')
+    assert response.status_code == 200
+    assert 'Residência Moderna'.encode() in response.data
+
+
+def test_catalog_index_filter_status(client):
+    response = client.get('/projetos/?status=Concluído')
+    assert response.status_code == 200
+
+
+def test_catalog_index_search(client):
+    response = client.get('/projetos/?q=Moderna')
     assert response.status_code == 200
     assert 'Residência Moderna'.encode() in response.data
 
@@ -43,18 +64,14 @@ def test_catalog_detail_not_found(client):
     assert response.status_code == 404
 
 
-def test_models3d_index(client):
-    response = client.get('/modelos-3d/')
+def test_catalog_edit_form(client):
+    response = client.get('/projetos/1/editar')
     assert response.status_code == 200
+    assert 'Residência Moderna'.encode() in response.data
 
 
-def test_models3d_viewer(client):
-    response = client.get('/modelos-3d/1')
-    assert response.status_code == 200
-
-
-def test_models3d_viewer_not_found(client):
-    response = client.get('/modelos-3d/9999')
+def test_catalog_edit_not_found(client):
+    response = client.get('/projetos/9999/editar')
     assert response.status_code == 404
 
 
@@ -82,6 +99,38 @@ def test_project_create(client):
     assert 'CP-RES-2026-999'.encode() in response.data
 
 
+def test_project_create_invalid(client):
+    response = client.post('/projetos/novo', data={
+        'code': '',
+        'name': '',
+        'description': '',
+        'client_name': '',
+        'location': '',
+        'responsible_engineer': '',
+        'category': 'Residencial',
+        'status': 'Planejamento',
+        'area_m2': '100',
+        'budget_brl': '50000',
+    })
+    assert response.status_code == 400
+
+
+def test_project_create_duplicate_code(client):
+    response = client.post('/projetos/novo', data={
+        'code': 'CP-RES-2026-001',
+        'name': 'Outro Projeto',
+        'description': 'Descrição.',
+        'client_name': 'Cliente',
+        'location': 'SP',
+        'responsible_engineer': 'Eng. Teste',
+        'category': 'Residencial',
+        'status': 'Planejamento',
+        'area_m2': '100',
+        'budget_brl': '50000',
+    })
+    assert response.status_code == 400
+
+
 def test_project_edit(client):
     response = client.post('/projetos/1/editar', data={
         'code': 'CP-RES-2026-001',
@@ -99,6 +148,46 @@ def test_project_edit(client):
     }, follow_redirects=True)
     assert response.status_code == 200
     assert 'Residência Moderna Atualizada'.encode() in response.data
+
+
+def test_project_delete(client):
+    response = client.post('/projetos/1/excluir', follow_redirects=True)
+    assert response.status_code == 200
+    assert 'excluído com sucesso'.encode() in response.data
+    # Projeto deve ter sido removido
+    detail = client.get('/projetos/1')
+    assert detail.status_code == 404
+
+
+def test_project_delete_not_found(client):
+    response = client.post('/projetos/9999/excluir')
+    assert response.status_code == 404
+
+
+# ── Models 3D ─────────────────────────────────────────────────────────
+def test_models3d_index(client):
+    response = client.get('/modelos-3d/')
+    assert response.status_code == 200
+
+
+def test_models3d_viewer(client):
+    response = client.get('/modelos-3d/1')
+    assert response.status_code == 200
+
+
+def test_models3d_viewer_not_found(client):
+    response = client.get('/modelos-3d/9999')
+    assert response.status_code == 404
+
+
+def test_models3d_edit_form(client):
+    response = client.get('/modelos-3d/1/editar')
+    assert response.status_code == 200
+
+
+def test_models3d_edit_not_found(client):
+    response = client.get('/modelos-3d/9999/editar')
+    assert response.status_code == 404
 
 
 def test_model_create_form(client):
@@ -138,3 +227,17 @@ def test_model_create_invalid(client):
         'project_id': '1',
     })
     assert response.status_code == 400
+
+
+def test_model_delete(client):
+    response = client.post('/modelos-3d/1/excluir', follow_redirects=True)
+    assert response.status_code == 200
+    assert 'excluído com sucesso'.encode() in response.data
+    detail = client.get('/modelos-3d/1')
+    assert detail.status_code == 404
+
+
+def test_model_delete_not_found(client):
+    response = client.post('/modelos-3d/9999/excluir')
+    assert response.status_code == 404
+
