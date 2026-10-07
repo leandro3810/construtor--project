@@ -22,6 +22,138 @@ O **Construtor Project** é uma aplicação web para organizar projetos de const
 - Registre categoria, disciplina, versão, formato, autoria, status de validação e tamanho do arquivo.
 - O status de validação pode ser Pendente, Em revisão ou Aprovado.
 
+## Diagramas do projeto
+
+Os diagramas abaixo descrevem a arquitetura, os dados e os principais fluxos da aplicação. Eles são escritos em Mermaid e podem ser renderizados diretamente nesta wiki.
+
+### Arquitetura
+
+```mermaid
+flowchart TD
+    usuario[Usuário] --> navegador[Navegador]
+    navegador --> flask[Aplicação Flask]
+    flask --> main[Blueprint principal]
+    flask --> projetos[Blueprint de projetos]
+    flask --> modelos[Blueprint de modelos 3D]
+    main --> templates[Templates Jinja]
+    projetos --> templates
+    modelos --> templates
+    projetos --> sqlalchemy[Flask-SQLAlchemy]
+    modelos --> sqlalchemy
+    main --> sqlalchemy
+    sqlalchemy --> sqlite[(SQLite)]
+    templates --> frontend[HTML e CSS]
+    templates --> scripts[JavaScript]
+    scripts --> three[Three.js]
+    navegador --> frontend
+    navegador --> scripts
+```
+
+### Modelo de dados
+
+```mermaid
+erDiagram
+    PROJECTS ||--o{ MODELS3D : possui
+    PROJECTS {
+        int id PK
+        string code UK
+        string name
+        string description
+        string client_name
+        string location
+        string responsible_engineer
+        string category
+        string status
+        float area_m2
+        float budget_brl
+        date start_date
+        date expected_end_date
+        datetime created_at
+    }
+    MODELS3D {
+        int id PK
+        string name
+        string description
+        string category
+        string discipline
+        string version
+        string format
+        string author_name
+        string validation_status
+        float file_size_mb
+        string file_name
+        int project_id FK
+        datetime created_at
+    }
+```
+
+Cada modelo 3D pertence a um projeto. Ao excluir um projeto, seus modelos associados também são excluídos.
+
+### Navegação
+
+```mermaid
+flowchart TD
+    inicio["Início /"] --> projetos["Projetos /projetos/"]
+    inicio --> modelos["Modelos 3D /modelos-3d/"]
+    inicio --> sobre["Sobre /sobre"]
+    projetos --> detalhe["Detalhes /projetos/&lt;id&gt;"]
+    projetos --> novoProjeto["Novo projeto /projetos/novo"]
+    detalhe --> editarProjeto["Editar projeto /projetos/&lt;id&gt;/editar"]
+    detalhe --> excluirProjeto["Excluir projeto (POST)"]
+    detalhe --> modelosProjeto["Modelos associados"]
+    modelos --> visualizador["Visualizador /modelos-3d/&lt;id&gt;"]
+    modelos --> novoModelo["Novo modelo /modelos-3d/novo"]
+    visualizador --> editarModelo["Editar modelo /modelos-3d/&lt;id&gt;/editar"]
+    visualizador --> excluirModelo["Excluir modelo (POST)"]
+    novoModelo --> visualizador
+    editarModelo --> visualizador
+    novoProjeto --> detalhe
+    editarProjeto --> detalhe
+```
+
+### Fluxos de cadastro e edição
+
+```mermaid
+flowchart TD
+    escolha{O que cadastrar ou editar?}
+    escolha -->|Projeto| formularioProjeto[Preencher dados do projeto]
+    formularioProjeto --> validarProjeto{Dados válidos e código único?}
+    validarProjeto -->|Não| erroProjeto[Mostrar erros no formulário]
+    erroProjeto --> formularioProjeto
+    validarProjeto -->|Sim| salvarProjeto[Salvar projeto]
+    salvarProjeto --> detalheProjeto[Exibir detalhes do projeto]
+
+    escolha -->|Modelo 3D| formularioModelo[Preencher dados e selecionar projeto]
+    formularioModelo --> validarModelo{Dados válidos e projeto existente?}
+    validarModelo -->|Não| erroModelo[Mostrar erros no formulário]
+    erroModelo --> formularioModelo
+    validarModelo -->|Sim| salvarModelo[Salvar modelo associado ao projeto]
+    salvarModelo --> visualizadorModelo[Abrir visualizador do modelo]
+```
+
+### Renderização do visualizador 3D
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Navegador
+    participant Flask
+    participant Banco as SQLite
+    participant Three as Three.js
+
+    Usuario->>Navegador: Abre /modelos-3d/&lt;id&gt;
+    Navegador->>Flask: Solicita página do modelo
+    Flask->>Banco: Busca modelo pelo ID
+    Banco-->>Flask: Metadados do modelo
+    Flask-->>Navegador: Template do visualizador e categoria
+    Navegador->>Three: Inicializa cena e geometria da categoria
+    Three-->>Navegador: Renderiza modelo esquemático
+    Usuario->>Navegador: Orbita, aproxima ou desloca a visualização
+    Navegador->>Three: Atualiza câmera e controles
+```
+
+O visualizador atual gera uma geometria esquemática no navegador conforme a categoria do modelo; não carrega um arquivo 3D armazenado.
+
 ## Como usar
 
 1. Inicie a aplicação seguindo as instruções de instalação abaixo.
