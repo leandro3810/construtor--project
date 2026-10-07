@@ -14,6 +14,35 @@
 </div>
 
 <section class="section">
+  <div class="filter-bar">
+    <form method="get" action="{{ url_for('models3d.index') }}">
+      <input
+        class="filter-search"
+        type="search"
+        name="q"
+        placeholder="Buscar modelo, disciplina, responsável ou projeto…"
+        value="{{ request.args.get('q', '') }}"
+        autocomplete="off"
+      >
+      <select class="filter-select" name="category">
+        <option value="">Todas categorias</option>
+        {% for category in categories %}
+        <option value="{{ category }}" {% if request.args.get('category') == category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
+      </select>
+      <select class="filter-select" name="status">
+        <option value="">Todas validações</option>
+        {% for status in validation_statuses %}
+        <option value="{{ status }}" {% if request.args.get('status') == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-ghost btn-sm">Filtrar</button>
+      <a href="{{ url_for('models3d.export_csv', **request.args) }}" class="btn btn-ghost btn-sm">↓ CSV</a>
+      {% if request.args.get('q') or request.args.get('category') or request.args.get('status') %}
+      <a href="{{ url_for('models3d.index') }}" class="btn btn-ghost btn-sm">Limpar</a>
+      {% endif %}
+    </form>
+  </div>
   {% if modelos %}
   <div class="cards">
     {% for m in modelos %}
@@ -37,8 +66,12 @@
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">🧊</div>
-    <p class="empty-state-text">Nenhum modelo 3D cadastrado ainda.</p>
+    <p class="empty-state-text">Nenhum modelo 3D encontrado com os filtros aplicados.</p>
+    {% if request.args.get('q') or request.args.get('category') or request.args.get('status') %}
+    <a href="{{ url_for('models3d.index') }}" class="btn btn-ghost" style="margin-top:0.5rem;">Limpar filtros</a>
+    {% else %}
     <a href="{{ url_for('models3d.create') }}" class="btn btn-primary" style="margin-top:0.5rem;">Cadastrar primeiro modelo</a>
+    {% endif %}
   </div>
   {% endif %}
 </section>

@@ -1,4 +1,6 @@
-from flask import render_template, abort, request, redirect, url_for, flash
+import csv
+from io import StringIO
+from flask import Response, render_template, abort, request, redirect, url_for, flash
 from app.extensions import db
 from app.models import Model3D, Project
 from . import models3d
@@ -9,8 +11,64 @@ VALIDATION_STATUS = ['Pendente', 'Em revisão', 'Aprovado']
 
 @models3d.route('/')
 def index():
-    modelos = Model3D.query.order_by(Model3D.created_at.desc()).all()
-    return render_template('models3d/index.html', modelos=modelos)
+    modelos = _filtered_models()
+    return render_template(
+        'models3d/index.html',
+        modelos=modelos,
+        categories=MODEL_CATEGORIES,
+        validation_statuses=VALIDATION_STATUS,
+    )
+
+
+@models3d.route('/export.csv')
+def export_csv():
+    modelos = _filtered_models()
+    rows = [
+        ['Modelo', 'Projeto', 'Categoria', 'Disciplina', 'Versão', 'Formato', 'Responsável', 'Validação', 'Tamanho (MB)', 'Arquivo'],
+    ]
+    rows.extend([
+        [
+            modelo.name, modelo.project.name, modelo.category, modelo.discipline,
+            modelo.version, modelo.format, modelo.author_name, modelo.validation_status,
+            modelo.file_size_mb, modelo.file_name or '',
+        ]
+        for modelo in modelos
+    ])
+    output = StringIO()
+    writer = csv.writer(output, delimiter=';')
+    for row in rows:
+        writer.writerow([_safe_csv_value(value) for value in row])
+    response = Response('\ufeff' + output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = 'attachment; filename="modelos-3d.csv"'
+    return response
+
+
+def _filtered_models():
+    query = Model3D.query
+    q = (request.args.get('q') or '').strip()
+    category = (request.args.get('category') or '').strip()
+    validation_status = (request.args.get('status') or '').strip()
+
+    if q:
+        like = f'%{q}%'
+        query = query.filter(db.or_(
+            Model3D.name.ilike(like),
+            Model3D.discipline.ilike(like),
+            Model3D.author_name.ilike(like),
+            Model3D.project.has(Project.name.ilike(like)),
+        ))
+    if category in MODEL_CATEGORIES:
+        query = query.filter(Model3D.category == category)
+    if validation_status in VALIDATION_STATUS:
+        query = query.filter(Model3D.validation_status == validation_status)
+    return query.order_by(Model3D.created_at.desc()).all()
+
+
+def _safe_csv_value(value) -> str:
+    text = str(value) if value is not None else ''
+    if text.lstrip(' \t\r\n').startswith(('=', '+', '-', '@')):
+        return "'" + text
+    return text
 
 
 @models3d.route('/<int:model_id>')

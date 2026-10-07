@@ -1,5 +1,7 @@
+import csv
+from io import StringIO
 from datetime import datetime
-from flask import render_template, abort, request, redirect, url_for, flash
+from flask import Response, render_template, abort, request, redirect, url_for, flash
 from app.extensions import db
 from app.models import Project
 from . import catalog
@@ -10,6 +12,34 @@ PROJECT_STATUS = ['Planejamento', 'Em andamento', 'Concluído']
 
 @catalog.route('/')
 def index():
+    projects = _filtered_projects()
+    return render_template(
+        'catalog/index.html',
+        projects=projects,
+        categories=PROJECT_CATEGORIES,
+        statuses=PROJECT_STATUS,
+    )
+
+
+@catalog.route('/export.csv')
+def export_csv():
+    projects = _filtered_projects()
+    rows = [
+        ['Código', 'Projeto', 'Cliente', 'Localização', 'Categoria', 'Status', 'Área (m²)', 'Orçamento (R$)', 'Início', 'Término previsto'],
+    ]
+    rows.extend([
+        [
+            project.code, project.name, project.client_name, project.location,
+            project.category, project.status, project.area_m2, project.budget_brl,
+            project.start_date.isoformat() if project.start_date else '',
+            project.expected_end_date.isoformat() if project.expected_end_date else '',
+        ]
+        for project in projects
+    ])
+    return _csv_response(rows, 'projetos.csv')
+
+
+def _filtered_projects():
     query = Project.query
     q = (request.args.get('q') or '').strip()
     category = (request.args.get('category') or '').strip()
@@ -29,13 +59,24 @@ def index():
     if status and status in PROJECT_STATUS:
         query = query.filter(Project.status == status)
 
-    projects = query.order_by(Project.created_at.desc()).all()
-    return render_template(
-        'catalog/index.html',
-        projects=projects,
-        categories=PROJECT_CATEGORIES,
-        statuses=PROJECT_STATUS,
-    )
+    return query.order_by(Project.created_at.desc()).all()
+
+
+def _csv_response(rows: list[list], filename: str) -> Response:
+    output = StringIO()
+    writer = csv.writer(output, delimiter=';')
+    for row in rows:
+        writer.writerow([_safe_csv_value(value) for value in row])
+    response = Response('\ufeff' + output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+def _safe_csv_value(value) -> str:
+    text = str(value) if value is not None else ''
+    if text.lstrip(' \t\r\n').startswith(('=', '+', '-', '@')):
+        return "'" + text
+    return text
 
 
 @catalog.route('/<int:project_id>')

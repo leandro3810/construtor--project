@@ -7,8 +7,11 @@ Plataforma web para gestão de projetos de construção civil com visualização
 ## Funcionalidades
 
 - **Catálogo de projetos** com busca por nome/código/cliente e filtros por categoria e status
+- **Painel de acompanhamento** com orçamento total, projetos em andamento e alertas de prazo vencido
 - **Detalhe de projeto** com barra de progresso estimada por prazo e dados formatados
 - **Módulo de modelos 3D** com visualização interativa (orbit, zoom, pan) via Three.js
+- **Filtros para modelos 3D** por nome, projeto, disciplina, categoria e situação de validação
+- **Exportação CSV** de projetos e modelos, respeitando os filtros ativos
 - **CRUD completo** — criar, editar e excluir projetos e modelos com validação de dados
 - **Flash messages** de sucesso e erro em todas as operações
 - **Design responsivo** dark theme com glassmorphism, gradientes e tipografia Inter
@@ -63,11 +66,13 @@ O banco SQLite (`construtor.db`) é criado automaticamente com dados de exemplo.
 | GET | `/` | Home com stats |
 | GET | `/sobre` | Sobre o projeto |
 | GET | `/projetos/` | Catálogo (busca + filtros) |
+| GET | `/projetos/export.csv` | Exportar projetos filtrados em CSV |
 | GET | `/projetos/<id>` | Detalhe do projeto |
 | GET/POST | `/projetos/novo` | Criar projeto |
 | GET/POST | `/projetos/<id>/editar` | Editar projeto |
 | POST | `/projetos/<id>/excluir` | Excluir projeto |
 | GET | `/modelos-3d/` | Lista de modelos |
+| GET | `/modelos-3d/export.csv` | Exportar modelos filtrados em CSV |
 | GET | `/modelos-3d/<id>` | Visualizador 3D |
 | GET/POST | `/modelos-3d/novo` | Criar modelo |
 | GET/POST | `/modelos-3d/<id>/editar` | Editar modelo |
@@ -88,7 +93,7 @@ pip install pytest
 python -m pytest -q
 ```
 
-Suíte: **27 testes** cobrindo todas as rotas (CRUD, filtros, exclusão, 404, validações).
+Suíte cobrindo rotas CRUD, filtros, exportações CSV, exclusão, 404, painel e validações.
 
 ## Stack
 
