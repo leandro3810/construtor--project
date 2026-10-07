@@ -22,6 +22,30 @@ def test_home(client):
     response = client.get('/')
     assert response.status_code == 200
     assert 'Construtor Project'.encode() in response.data
+    assert 'Resumo da operação'.encode() in response.data
+
+
+def test_home_shows_overdue_projects(client):
+    from datetime import date, timedelta
+
+    response = client.post('/projetos/novo', data={
+        'code': 'CP-ATR-2026-001',
+        'name': 'Obra com prazo vencido',
+        'description': 'Projeto com prazo já expirado.',
+        'client_name': 'Cliente Teste',
+        'location': 'São Paulo/SP',
+        'responsible_engineer': 'Eng. Teste',
+        'category': 'Comercial',
+        'status': 'Em andamento',
+        'area_m2': '100',
+        'budget_brl': '50000',
+        'start_date': '',
+        'expected_end_date': (date.today() - timedelta(days=1)).isoformat(),
+    })
+    assert response.status_code == 302
+    dashboard = client.get('/')
+    assert 'Obra com prazo vencido'.encode() in dashboard.data
+    assert 'Com prazo vencido'.encode() in dashboard.data
 
 
 def test_about(client):
@@ -52,6 +76,15 @@ def test_catalog_index_search(client):
     response = client.get('/projetos/?q=Moderna')
     assert response.status_code == 200
     assert 'Residência Moderna'.encode() in response.data
+
+
+def test_catalog_export_csv(client):
+    response = client.get('/projetos/export.csv?category=Residencial')
+    assert response.status_code == 200
+    assert response.mimetype == 'text/csv'
+    assert 'attachment; filename="projetos.csv"' in response.headers['Content-Disposition']
+    assert 'Residência Moderna'.encode() in response.data
+    assert 'Complexo Comercial Alfa'.encode() not in response.data
 
 
 def test_catalog_detail(client):
@@ -170,6 +203,21 @@ def test_models3d_index(client):
     assert response.status_code == 200
 
 
+def test_models3d_filter(client):
+    response = client.get('/modelos-3d/?status=Pendente')
+    assert response.status_code == 200
+    assert 'Galpão Metálico'.encode() in response.data
+    assert 'Fachada Torre Alfa'.encode() not in response.data
+
+
+def test_models3d_export_csv(client):
+    response = client.get('/modelos-3d/export.csv')
+    assert response.status_code == 200
+    assert response.mimetype == 'text/csv'
+    assert 'attachment; filename="modelos-3d.csv"' in response.headers['Content-Disposition']
+    assert 'Estrutura Residencial'.encode() in response.data
+
+
 def test_models3d_viewer(client):
     response = client.get('/modelos-3d/1')
     assert response.status_code == 200
@@ -240,4 +288,3 @@ def test_model_delete(client):
 def test_model_delete_not_found(client):
     response = client.post('/modelos-3d/9999/excluir')
     assert response.status_code == 404
-
