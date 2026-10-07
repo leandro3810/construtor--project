@@ -87,6 +87,23 @@ def test_catalog_export_csv(client):
     assert 'Complexo Comercial Alfa'.encode() not in response.data
 
 
+def test_catalog_export_csv_escapes_formula_values(client):
+    client.post('/projetos/novo', data={
+        'code': 'CP-CSV-2026-001',
+        'name': ' =HYPERLINK("https://example.com")',
+        'description': 'Projeto de teste CSV.',
+        'client_name': 'Cliente Teste',
+        'location': 'São Paulo/SP',
+        'responsible_engineer': 'Eng. Teste',
+        'category': 'Comercial',
+        'status': 'Planejamento',
+        'area_m2': '100',
+        'budget_brl': '50000',
+    })
+    response = client.get('/projetos/export.csv')
+    assert b"' =HYPERLINK" in response.data
+
+
 def test_catalog_detail(client):
     response = client.get('/projetos/1')
     assert response.status_code == 200

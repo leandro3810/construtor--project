@@ -66,7 +66,7 @@ def _filtered_models():
 
 def _safe_csv_value(value) -> str:
     text = str(value) if value is not None else ''
-    if text.startswith(('=', '+', '-', '@', '\t', '\r')):
+    if text.lstrip(' \t\r\n').startswith(('=', '+', '-', '@')):
         return "'" + text
     return text
 
