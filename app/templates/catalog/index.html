@@ -10,6 +10,7 @@
   </p>
   <div class="hero-actions" style="margin-top:1rem;">
     <a href="{{ url_for('catalog.create') }}" class="btn btn-primary">+ Novo Projeto</a>
+    <a href="{{ url_for('catalog.export_csv', **request.args) }}" class="btn btn-ghost">↓ Exportar CSV</a>
   </div>
 </div>
 

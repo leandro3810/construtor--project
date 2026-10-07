@@ -5,25 +5,14 @@
 {% block content %}
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-eyebrow">✦ Plataforma de Construção Civil</div>
-    <h1>Construtor Project</h1>
+    <div class="hero-eyebrow">Plataforma de gestão de obras</div>
+    <h1>Obras sob controle.<br>Do projeto à entrega.</h1>
     <p class="hero-sub">
-      Gerencie projetos e modelos 3D de construção civil com
-      visualização interativa, categorização completa e fluxo de trabalho profissional.
+      Acompanhe prazos, investimentos e modelos BIM em um só lugar.
     </p>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <span class="stat-value">{{ total_projects }}</span>
-        <span class="stat-label">Projetos</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ total_models }}</span>
-        <span class="stat-label">Modelos 3D</span>
-      </div>
-    </div>
     <div class="hero-actions">
-      <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Ver Projetos →</a>
-      <a href="{{ url_for('models3d.index') }}" class="btn btn-ghost">Explorar Modelos 3D</a>
+      <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Acessar projetos →</a>
+      <a href="{{ url_for('catalog.create') }}" class="btn btn-ghost">+ Novo projeto</a>
     </div>
   </div>
   <div class="hero-visual" aria-hidden="true">
@@ -31,25 +20,73 @@
   </div>
 </section>
 
-<section class="section features">
-  <h2 class="section-title">O que oferecemos</h2>
-  <div class="cards">
-    <div class="card">
-      <div class="card-icon">🏗️</div>
-      <h3>Catálogo de Projetos</h3>
-      <p>Gerencie projetos residenciais, comerciais, industriais e institucionais com busca e filtros por categoria e status.</p>
+<section class="dashboard-section" aria-label="Resumo dos projetos">
+  <div class="dashboard-heading">
+    <div>
+      <span class="section-kicker">Visão geral</span>
+      <h2>Resumo da operação</h2>
     </div>
-    <div class="card">
-      <div class="card-icon">🧊</div>
-      <h3>Modelos 3D Interativos</h3>
-      <p>Visualize estruturas e arquiteturas em três dimensões no navegador com controle de câmera via Three.js.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">📊</div>
-      <h3>Gestão Completa</h3>
-      <p>Crie, edite e exclua projetos e modelos 3D com validação de formulários e feedback visual em tempo real.</p>
-    </div>
+    <span class="dashboard-date">Atualizado em {{ now.strftime('%d/%m/%Y') }}</span>
   </div>
+  <div class="dashboard-stats">
+    <article class="dashboard-stat">
+      <span class="dashboard-stat-label">Projetos cadastrados</span>
+      <strong>{{ total_projects }}</strong>
+      <a href="{{ url_for('catalog.index') }}">Ver portfólio →</a>
+    </article>
+    <article class="dashboard-stat">
+      <span class="dashboard-stat-label">Em andamento</span>
+      <strong>{{ active_projects }}</strong>
+      <a href="{{ url_for('catalog.index', status='Em andamento') }}">Acompanhar obras →</a>
+    </article>
+    <article class="dashboard-stat {% if overdue_projects %}stat-alert{% endif %}">
+      <span class="dashboard-stat-label">Com prazo vencido</span>
+      <strong>{{ overdue_projects|length }}</strong>
+      <a href="#overdue-projects">Revisar prazos →</a>
+    </article>
+    <article class="dashboard-stat">
+      <span class="dashboard-stat-label">Orçamento total</span>
+      <strong class="budget-value">R$ {{ total_budget|brl }}</strong>
+      <a href="{{ url_for('catalog.export_csv') }}">Exportar projetos ↓</a>
+    </article>
+  </div>
+</section>
+
+<section class="dashboard-lower">
+  <div class="dashboard-panel" id="overdue-projects">
+    <div class="panel-heading">
+      <div>
+        <span class="section-kicker">Atenção aos prazos</span>
+        <h2>Projetos atrasados</h2>
+      </div>
+      <span class="count-pill">{{ overdue_projects|length }}</span>
+    </div>
+    {% if overdue_projects %}
+    <ul class="overdue-list">
+      {% for project in overdue_projects %}
+      <li>
+        <span class="overdue-marker" aria-hidden="true"></span>
+        <div class="overdue-info">
+          <a href="{{ url_for('catalog.detail', project_id=project.id) }}">{{ project.name }}</a>
+          <small>{{ project.code }} · {{ project.location }}</small>
+        </div>
+        <time datetime="{{ project.expected_end_date.isoformat() }}">{{ project.expected_end_date.strftime('%d/%m/%Y') }}</time>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="dashboard-empty">
+      <span aria-hidden="true">✓</span>
+      <p>Nenhum projeto com prazo vencido.</p>
+    </div>
+    {% endif %}
+  </div>
+  <a class="models-summary" href="{{ url_for('models3d.index') }}">
+    <span class="models-summary-icon" aria-hidden="true">◈</span>
+    <span class="section-kicker">Biblioteca BIM</span>
+    <strong>{{ total_models }} modelos 3D</strong>
+    <span>Visualizar biblioteca <span aria-hidden="true">→</span></span>
+  </a>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
