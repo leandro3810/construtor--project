@@ -88,18 +88,23 @@ def test_catalog_export_csv(client):
 
 
 def test_catalog_export_csv_escapes_formula_values(client):
-    client.post('/projetos/novo', data={
-        'code': 'CP-CSV-2026-001',
-        'name': ' =HYPERLINK("https://example.com")',
-        'description': 'Projeto de teste CSV.',
-        'client_name': 'Cliente Teste',
-        'location': 'São Paulo/SP',
-        'responsible_engineer': 'Eng. Teste',
-        'category': 'Comercial',
-        'status': 'Planejamento',
-        'area_m2': '100',
-        'budget_brl': '50000',
-    })
+    from app.extensions import db
+    from app.models import Project
+
+    with client.application.app_context():
+        db.session.add(Project(
+            code='CP-CSV-2026-001',
+            name=' =HYPERLINK("https://example.com")',
+            description='Projeto de teste CSV.',
+            client_name='Cliente Teste',
+            location='São Paulo/SP',
+            responsible_engineer='Eng. Teste',
+            category='Comercial',
+            status='Planejamento',
+            area_m2=100,
+            budget_brl=50000,
+        ))
+        db.session.commit()
     response = client.get('/projetos/export.csv')
     assert b"' =HYPERLINK" in response.data
 
